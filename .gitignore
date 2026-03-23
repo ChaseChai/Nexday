@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+.next/
+apps/web/.next/
+out/
+apps/renderer/dist/
+apps/desktop/dist/
+apps/desktop/.vite/
+*.sqlite
+*.sqlite3
+*.db
+.env
+.env.*

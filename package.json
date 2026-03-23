@@ -1,0 +1,19 @@
+{
+  "name": "nexday",
+  "private": true,
+  "version": "0.0.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:packages": "npm run build -w packages/core",
+    "dev": "npm run build:packages && npm -w apps/web run dev",
+    "build": "npm run build:packages && npm -w apps/web run build",
+    "lint": "npm run lint -ws --if-present",
+    "format": "prettier -w ."
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}

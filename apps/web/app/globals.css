@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 33% 98%;
+  --foreground: 215 25% 20%;
+  --card: 42 26% 97%;
+  --card-foreground: 215 25% 20%;
+  --primary: 175 79% 26%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 42 33% 95%;
+  --accent-foreground: 215 25% 22%;
+  --muted: 42 20% 94%;
+  --muted-foreground: 215 12% 48%;
+  --border: 30 13% 88%;
+  --radius: 1.1rem;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fafc 0%, #fafaf9 100%);
+  color: hsl(var(--foreground));
+  font-family: var(--font-body), sans-serif;
+}
+
+h1,
+h2,
+h3,
+.font-serif {
+  font-family: var(--font-heading), serif;
+}
+
+.nexday-rbc .rbc-time-view,
+.nexday-rbc .rbc-month-view,
+.nexday-rbc .rbc-header,
+.nexday-rbc .rbc-time-content,
+.nexday-rbc .rbc-time-header-content {
+  border-color: #ece8e1;
+}
+
+.nexday-rbc .rbc-header {
+  background: #fdfcf9;
+  color: #607086;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 10px 0;
+}
+
+.nexday-rbc .rbc-time-slot {
+  color: #95a1b2;
+  font-size: 11px;
+}
+
+.nexday-rbc .rbc-timeslot-group {
+  border-bottom: 1px solid #f1eeea;
+}
+
+.nexday-rbc .rbc-today {
+  background: #f6fbfa;
+}
+
+.nexday-rbc .rbc-current-time-indicator {
+  background-color: #0f766e;
+  height: 2px;
+}
+
+.nexday-rbc .rbc-toolbar {
+  margin-bottom: 10px;
+}
+
+.nexday-rbc .rbc-toolbar button {
+  border-radius: 999px;
+  border: 1px solid #e7e5e4;
+  color: #334155;
+  background: #fff;
+}
+
+.nexday-rbc .rbc-toolbar button.rbc-active {
+  background: #0f766e;
+  color: white;
+  border-color: #0f766e;
+}
+
+.nexday-rbc .rbc-event {
+  transition: box-shadow 0.16s ease;
+}
+
+.nexday-rbc .rbc-event:hover {
+  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.18);
+}
+
+.nexday-rbc .nexday-current-day-slot {
+  background: rgba(15, 118, 110, 0.02);
+}
