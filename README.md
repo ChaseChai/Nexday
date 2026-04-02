@@ -37,6 +37,18 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+### Optional: Enable LLM Planner API
+
+Copy `apps/web/.env.example` to `apps/web/.env.local` and fill values:
+
+```bash
+LLM_API_KEY=<your_key>
+LLM_BASE_URL=https://openrouter.ai/api/v1
+LLM_MODEL=deepseek/deepseek-chat
+```
+
+If no key is configured, NexDay will automatically fall back to the local heuristic planner.
+
 ## Current MVP Workflow
 
 1. Set time precision and break preference in the left panel.

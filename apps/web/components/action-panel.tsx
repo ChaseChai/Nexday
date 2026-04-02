@@ -11,22 +11,24 @@ type Props = {
   slotMinutes: 15 | 30;
   includeBreaks: boolean;
   isPlanning: boolean;
+  isImporting: boolean;
   importStatus: string;
   onPlan: () => void;
   onSlotMinutesChange: (value: 15 | 30) => void;
   onIncludeBreaksChange: (value: boolean) => void;
-  onMockImport: (fileName: string) => void;
+  onImportFile: (file: File) => void;
 };
 
 export function ActionPanel({
   slotMinutes,
   includeBreaks,
   isPlanning,
+  isImporting,
   importStatus,
   onPlan,
   onSlotMinutesChange,
   onIncludeBreaksChange,
-  onMockImport
+  onImportFile
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -90,17 +92,18 @@ export function ActionPanel({
             className="hidden"
             onChange={(event) => {
               const selected = event.target.files?.[0];
-              if (selected) onMockImport(selected.name);
+              if (selected) onImportFile(selected);
               event.target.value = '';
             }}
           />
           <Button
             variant="outline"
             className="w-full justify-center gap-2"
+            disabled={isImporting}
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="h-4 w-4" />
-            Import Schedule File
+            {isImporting ? 'Importing...' : 'Import Schedule File'}
           </Button>
           <p className="min-h-5 text-xs text-muted-foreground">{importStatus}</p>
         </div>

@@ -1,4 +1,4 @@
-import type { CalendarEvent, ChatMessage, PlannerPrefs } from '@/lib/types';
+import type { CalendarEvent, ChatMessage, FlexPoolTask, PlannerPrefs } from '@/lib/types';
 
 const STORAGE_KEY = 'nexday.web.state.v1';
 
@@ -6,6 +6,8 @@ export type SavedState = {
   events: CalendarEvent[];
   messages: ChatMessage[];
   prefs: PlannerPrefs;
+  importedFixedEvents: CalendarEvent[];
+  importedFlexPool: FlexPoolTask[];
 };
 
 export const defaultPrefs: PlannerPrefs = {
@@ -35,7 +37,13 @@ export function loadState(): SavedState | null {
         ...event,
         start: new Date(event.start),
         end: new Date(event.end)
-      }))
+      })),
+      importedFixedEvents: (parsed.importedFixedEvents ?? []).map((event) => ({
+        ...event,
+        start: new Date(event.start),
+        end: new Date(event.end)
+      })),
+      importedFlexPool: parsed.importedFlexPool ?? []
     };
   } catch {
     return null;

@@ -20,3 +20,13 @@ export type PlannerPrefs = {
   slotMinutes: 15 | 30;
   includeBreaks: boolean;
 };
+
+export type FlexPoolTask = {
+  id: string;
+  title: string;
+  durationMinutes: number;
+  priority: Priority;
+  category: 'study' | 'work' | 'personal' | 'other' | 'class' | 'exercise' | 'sleep';
+  notes?: string;
+  deadlineMs?: number;
+};

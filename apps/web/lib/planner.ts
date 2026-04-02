@@ -1,6 +1,6 @@
 import { autoPlanWeek, getLocalMondayStartMs, type FixedEvent, type FlexPoolItem } from '@nexday/core';
 
-import type { CalendarEvent, PlannerPrefs, Priority } from '@/lib/types';
+import type { CalendarEvent, FlexPoolTask, PlannerPrefs, Priority } from '@/lib/types';
 
 const SLOT_MS = 60_000;
 
@@ -18,6 +18,18 @@ function toPriority(index: number): Priority {
   if (index % 2 === 0) return 'P1';
   return 'P2';
 }
+
+type PlannerInput = {
+  importedFixedEvents?: CalendarEvent[];
+  importedFlexPool?: FlexPoolTask[];
+  agentFlexPool?: FlexPoolTask[];
+  useGoalHeuristics?: boolean;
+};
+
+type PlannerResult = {
+  events: CalendarEvent[];
+  unscheduledCount: number;
+};
 
 function buildFixedBlocks(weekStartMs: number): FixedEvent[] {
   const daily = [
@@ -49,9 +61,11 @@ function buildFixedBlocks(weekStartMs: number): FixedEvent[] {
   return result;
 }
 
-export function createPlanFromGoal(goal: string, prefs: PlannerPrefs): CalendarEvent[] {
-  const weekStartMs = getLocalMondayStartMs(new Date());
-  const fixed = buildFixedBlocks(weekStartMs);
+function buildGoalFlexPool(goal: string, prefs: PlannerPrefs, weekStartMs: number): FlexPoolItem[] {
+  if (!goal.trim()) {
+    return [];
+  }
+
   const seed = hashSeed(goal || 'next-week');
 
   const keywords =
@@ -61,7 +75,7 @@ export function createPlanFromGoal(goal: string, prefs: PlannerPrefs): CalendarE
       .filter(Boolean)
       .slice(0, 6) || [];
 
-  const flexPool: FlexPoolItem[] = Array.from({ length: Math.max(4, keywords.length || 4) }).map((_, idx) => {
+  return Array.from({ length: Math.max(4, keywords.length || 4) }).map((_, idx) => {
     const text = keywords[idx] || `Deep work block ${idx + 1}`;
     const durationMin = idx % 2 === 0 ? 90 : 60;
     const dayOffset = (seed + idx * 2) % 5;
@@ -77,6 +91,43 @@ export function createPlanFromGoal(goal: string, prefs: PlannerPrefs): CalendarE
       notes: prefs.includeBreaks ? 'Auto-planned with recovery buffers.' : ''
     };
   });
+}
+
+function toFixedEvent(item: CalendarEvent): FixedEvent {
+  return {
+    id: item.id,
+    kind: 'fixed',
+    title: item.title,
+    startMs: item.start.getTime(),
+    endMs: item.end.getTime(),
+    category: 'class',
+    locked: true,
+    source: 'import'
+  };
+}
+
+function toFlexPoolItem(item: FlexPoolTask): FlexPoolItem {
+  return {
+    id: item.id,
+    title: item.title,
+    durationMinutes: item.durationMinutes,
+    category: item.category,
+    priority: item.priority,
+    notes: item.notes,
+    deadlineMs: item.deadlineMs,
+    source: 'import'
+  };
+}
+
+export function createPlanFromGoal(goal: string, prefs: PlannerPrefs, input: PlannerInput = {}): PlannerResult {
+  const weekStartMs = getLocalMondayStartMs(new Date());
+  const importedFixed = (input.importedFixedEvents ?? []).map(toFixedEvent);
+  const fixed = [...buildFixedBlocks(weekStartMs), ...importedFixed];
+
+  const generatedFromGoal = input.useGoalHeuristics === false ? [] : buildGoalFlexPool(goal, prefs, weekStartMs);
+  const importedPool = (input.importedFlexPool ?? []).map(toFlexPoolItem);
+  const agentPool = (input.agentFlexPool ?? []).map(toFlexPoolItem);
+  const flexPool: FlexPoolItem[] = [...importedPool, ...agentPool, ...generatedFromGoal];
 
   const plan = autoPlanWeek({
     weekStartMs,
@@ -109,5 +160,9 @@ export function createPlanFromGoal(goal: string, prefs: PlannerPrefs): CalendarE
     priority: item.priority
     }));
 
-  return [...fixedEvents, ...flexEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
+  const events = [...fixedEvents, ...flexEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
+  return {
+    events,
+    unscheduledCount: plan.unscheduled.length
+  };
 }
